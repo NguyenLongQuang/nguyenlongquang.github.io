@@ -94,10 +94,18 @@
 
             const start = performance.now(); // Record start time
 
-            const response = await fetch(`/out.bin?cache-bust=${new Date().getTime()}`, {
-                method: 'GET'
+            const response = await fetch('/out.bin', {
+                method: 'GET',
+                headers: {
+                    'Cache-Control': 'no-cache'
+                }
             })
             const buffer = await response.arrayBuffer();
+
+            const endd = performance.now(); // Record end time
+            const dTime = endd - start; // Calculate execution time
+            console.log(`Download time: ${dTime.toFixed(3)} milliseconds`);
+
             const bytes = new Uint8Array(buffer);
             const p = api.create_buffer(bytes.length);
             Module.HEAPU8.set(bytes, p);
@@ -115,7 +123,7 @@
             api.destroy_buffer(color_ptr);
 
             const end = performance.now(); // Record end time
-            const executionTime = end - start; // Calculate execution time
+            const executionTime = end - endd; // Calculate execution time
             console.log(`Execution time: ${executionTime.toFixed(3)} milliseconds`);
 
 
